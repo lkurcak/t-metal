@@ -47,6 +47,13 @@ start.S calls `t_platform_halt`, not `platform::t_platform_halt`. It's
 the same on the hosted target. No test of t-lang's puts an `extern fn` in a
 module.
 
+The checker already has it right: two `extern fn put`s in two modules are
+refused, "a C name is one for the whole program". It's only the C backend:
+`Gen::import_body` and `Gen::exports` (src/cgen.rs) take the item's path,
+`d.name.name`, for its C name and its symbol. So a platform function in a
+module isn't even seen as the platform's there (`PLATFORM_HOOKS` holds bare
+names), and gets an `x_` name of its own.
+
 So every `extern fn` of t-metal's is at the end of `main.t`, where each
 export forwards to the module that does the work (`power::off`,
 `trap::take`, `uart::put_text`), and each module calls the imports as
