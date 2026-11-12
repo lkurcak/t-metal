@@ -58,4 +58,5 @@ warnings, everything is formatted, the shell's tests pass, the kernel
 builds for the freestanding target with no warnings, and what it writes on
 QEMU for each session in `tests/sessions` is `tests/expected.txt`. It
 needs `t`, clang with the riscv64 target, ld.lld and
-`qemu-system-riscv64` (Debian and Ubuntu: `clang lld qemu-system-misc`).
+`qemu-system-riscv64` (Debian and Ubuntu: `clang lld qemu-system-riscv`,
+or `qemu-system-misc` on older ones).
