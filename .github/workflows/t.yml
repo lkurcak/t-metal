@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    uses: lkurcak/forge/.github/workflows/t-ci.yml@v1
+    with:
+      # The `t` this repo is checked with. Bump both together, from the
+      # release's asset digest: gh release view vX.Y.Z -R lkurcak/t-lang --json assets
+      t-version: v0.85.0
+      t-sha256: b972f999b805c6b720d7f5eff3b6cf6d98da20fce5c0a86eab8fa19b6a1bf0fc
+      # The kernel runs on QEMU, linked by ld.lld; the runner has clang.
+      run: >-
+        sudo apt-get update -qq &&
+        sudo apt-get install -y -qq --no-install-recommends qemu-system-misc lld &&
+        tests/run.sh

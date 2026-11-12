@@ -1,0 +1,107 @@
+== tests/sessions/exhaust.txt
+t-metal: T on bare metal. Type `help` for the commands.
+> primes 1000
+168 primes up to 1000, the largest 997
+> exhaust
+runtime error: out of memory for 65536 slots
+  --> main.t:50:21
+   |
+50 |         blocks.push(List::<u8>::with_capacity(64 * 1024));
+   |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[exit 1]
+== tests/sessions/panic.txt
+t-metal: T on bare metal. Type `help` for the commands.
+> echo about to panic
+about to panic
+> panic
+runtime error: panicked: asked to
+  --> main.t:36:31
+   |
+36 |             Outcome::Panic => core::panic::panic("asked to"),
+   |                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[exit 1]
+== tests/sessions/shell.txt
+t-metal: T on bare metal. Type `help` for the commands.
+> help
+commands:
+  help           this
+  echo TEXT      writes TEXT back
+  uptime         how long since the machine started, and its timer interrupts
+  sleep MS       waits MS milliseconds, on the timer
+  mem            how the heap is doing
+  set KEY VALUE  gives KEY the value VALUE
+  get KEY        KEY's value
+  del KEY        forgets KEY
+  keys           every KEY with a value, in order
+  primes N       the primes up to N, at most 1000000
+  panic          panics, which stops the machine
+  exhaust        allocates until the heap runs out, which stops the machine
+  trap           runs an instruction that traps, which stops the machine
+  halt           turns the machine off
+> echo hello from T, on bare metal
+hello from T, on bare metal
+> uptime
+up N ms, M timer interrupts
+> sleep 50
+> uptime
+up N ms, M timer interrupts
+> mem
+heap: 4 bytes in 1 blocks, at most 32
+      48 of 4194304 bytes ever given out
+> set b two words
+b = two words
+> set a 1
+a = 1
+> set a one
+a = one (was 1)
+> get a
+one
+> get c
+no value for c
+> keys
+a
+b
+> del b
+forgot b = two words
+> keys
+a
+> primes 100
+2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97
+25 primes up to 100, the largest 97
+> primes 1000000
+78498 primes up to 1000000, the largest 999983
+> primes 1000001
+usage: primes N, a whole number up to 1000000
+> sleep forever
+usage: sleep MS, a whole number of milliseconds
+> frob
+no command `frob`: `help` lists them
+> mem
+heap: 584 bytes in 6 blocks, at most 1524885
+      2098128 of 4194304 bytes ever given out
+> halt
+[exit 0]
+== tests/sessions/terminal.txt
+t-metal: T on bare metal. Type `help` for the commands.
+> echo enter as a return
+enter as a return
+> echo as both
+as both
+> echo as a feed
+as a feed
+> ech ho rubbed out x y
+rubbed out y
+> not this        echo nor this^C
+> echo arrows left out
+arrows left out
+> halt
+[exit 0]
+== tests/sessions/trap.txt
+t-metal: T on bare metal. Type `help` for the commands.
+> trap
+runtime error: panicked: trap: cause 0x0000000000000003 at 0xADDRESS
+  --> trap.t:18:9
+   |
+18 |         core::panic::panic_with(&f"trap: cause {Hex { n: cause }} at {Hex { n: at }}");
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[exit 1]

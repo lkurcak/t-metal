@@ -1,0 +1,5 @@
+libraries = ["alloc"]
+
+[dependencies]
+hashmap = { git = "https://github.com/lkurcak/t-libs", rev = "b1e77f0ff726ebea8bff4053dc224502b97823cb", subdirectory = "hashmap" }
+heap = { git = "https://github.com/lkurcak/t-libs", rev = "b1e77f0ff726ebea8bff4053dc224502b97823cb", subdirectory = "heap" }

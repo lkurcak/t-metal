@@ -1,0 +1,21 @@
+help
+echo hello from T, on bare metal
+uptime
+sleep 50
+uptime
+mem
+set b two words
+set a 1
+set a one
+get a
+get c
+keys
+del b
+keys
+primes 100
+primes 1000000
+primes 1000001
+sleep forever
+frob
+mem
+halt
