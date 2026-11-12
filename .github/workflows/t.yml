@@ -20,5 +20,5 @@ jobs:
       # The kernel runs on QEMU, linked by ld.lld; the runner has clang.
       run: >-
         sudo apt-get update -qq &&
-        sudo apt-get install -y -qq --no-install-recommends qemu-system-misc lld &&
+        sudo apt-get install -y -qq --no-install-recommends qemu-system-riscv lld &&
         tests/run.sh
