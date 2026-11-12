@@ -14,7 +14,8 @@ The log is evidence for t-lang's plans, not a design for them.
 Written against `t` 0.85.0. t-metal is the first program to use what
 steps 38–41 added for machines with no operating system: the
 freestanding target, `extern fn`, `Volatile`, statics and `Atomic`
-(retrospective 8, N5). Entries say what 0.86.0 (t-lang step 71) fixed.
+(retrospective 8, N5). Entries say what 0.86.0 (t-lang step 71) and
+0.87.0 (step 72) fixed.
 
 ## An `extern fn` in a module isn't C — gap
 
@@ -188,6 +189,12 @@ type error: an invariant can't use `%` yet: only `+`, `-` and `*` by a constant
 
 Without the invariant, `shift - 4` may panic. `for i in 0..16u32` with
 `60 - 4 * i` is what `trap.t` does instead, and it's as clear.
+
+**Fixed in t 0.87.0**: a predicate, an invariant and a measure's body can
+use `/` and `%` by a constant other than 0, meaning what they mean in a
+body (t-lang docs/72-division.md). The loop above is proved: at its head,
+`shift % 4 == 0` and `shift > 0` say `shift` is at least 4. `trap.t` keeps
+its `for`.
 
 ## Small ones
 
