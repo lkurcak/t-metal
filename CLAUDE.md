@@ -8,14 +8,15 @@ is to find out what using T is like, here for the freestanding target,
 no other program uses.
 
 - `main.t` is the kernel's root; modules `board`, `uart`, `timer`, `trap`,
-  `power`, `heap`. Every `extern fn` is in `main.t` (one in a module makes
-  invalid C, FRICTION.md). `boot/` has start.S, the linker script and
+  `power`, `heap`; each `extern fn` is in the module that does its work.
+  `boot/` has start.S, the linker script and
   platform.c (the allocator and `mem*`, which T can't write yet).
 - `shell/` is a library (line editor, commands, values) that touches no
   machine; its tests run hosted with `t test shell/lib.t`.
 - Nothing panics but what's asked to: `#![warn(implicit_panics)]` in both,
-  with `--deny-warnings` (and, for the kernel, run.sh fails on any output
-  of `t build`, which has no `--deny-warnings`).
+  with `--deny-warnings`. `t check` and `t test` check the kernel too, on
+  the hosted target (t ≥ 0.86.0); only `t build` needs `--target
+  freestanding`.
 - `tests/run.sh` runs what CI runs, including each session in
   `tests/sessions` on QEMU against `tests/expected.txt`. `BLESS=1`
   rewrites the transcript. Needs clang (riscv64 target), ld.lld,

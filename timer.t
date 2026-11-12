@@ -6,12 +6,15 @@ use core::num::{saturating_add, wrapping_add};
 use core::sync::Atomic;
 use core::volatile::Volatile;
 
-use crate::{board, enable_interrupts};
+use crate::board;
 
 /// How many times a second the timer interrupts.
 const HZ: u64 = 100;
 /// How far `mtime` counts between two interrupts.
 const PERIOD: u64 = board::TIMEBASE_HZ / HZ;
+
+/// Lets the timer's interrupt in: start.S's.
+extern fn enable_interrupts();
 
 /// The timer interrupts taken. An interrupt can come between any two
 /// instructions of the program, so what it changes is a static, and an

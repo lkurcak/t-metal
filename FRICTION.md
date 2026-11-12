@@ -14,9 +14,14 @@ The log is evidence for t-lang's plans, not a design for them.
 Written against `t` 0.85.0. t-metal is the first program to use what
 steps 38–41 added for machines with no operating system: the
 freestanding target, `extern fn`, `Volatile`, statics and `Atomic`
-(retrospective 8, N5).
+(retrospective 8, N5). Entries say what 0.86.0 (t-lang step 71) fixed.
 
 ## An `extern fn` in a module isn't C — gap
+
+**Fixed in t 0.86.0**: an `extern fn` is C's by its own name wherever it's
+declared. Each of t-metal's is in the module that does the work now:
+`uart` writes the platform's bytes, `power` halts, `trap` takes traps,
+`timer` lets interrupts in, `heap` reads platform.c's counters.
 
 Any `extern fn` that isn't in the program's root module makes C the C
 compiler rejects: its C name and its symbol both have the module's path in
@@ -61,6 +66,12 @@ export forwards to the module that does the work (`power::off`,
 
 ## `t check` can't check a program that writes the platform — gap
 
+**Fixed in t 0.86.0**: a program that writes the platform is checked the
+same for either target, and only running or building it hosted fails.
+tests/run.sh runs `t check --deny-warnings main.t` and `t test
+--deny-warnings main.t` (the kernel's first test, `trap`'s `Hex`), and
+`t build` only makes the object.
+
 docs/40 shows how to write `t_platform_write` and `t_platform_halt` in T,
 and t-metal does. But a program that does can only be checked for the
 freestanding target, and `t check`, `t test` and the language server only
@@ -94,6 +105,9 @@ hosted target. That's a good shape anyway, but the kernel's own modules
 
 ## An interrupt handler may allocate — unsure
 
+**Fixed in t 0.86.0**: an export's effects, said or inferred, are at most
+`global` and `panic`, so `trap`'s `with {global, panic}` is checked now.
+
 start.S's trap vector calls the export `trap`, which may come between any
 two instructions of `main`, including in the middle of the platform's
 `t_platform_alloc`. Nothing stops an export from saying `with alloc`:
@@ -123,6 +137,9 @@ handlers.
 
 ## What an import that reads C's state should say — unsure
 
+**Settled in t 0.86.0**: docs/40 says such an import says `with global`,
+as t-metal's do.
+
 platform.c counts the heap's bytes in C statics, and `heap_used()` gives
 them to T. It isn't a function of its arguments: two calls can give
 different results. t-metal's imports say `with global`, as reading a
@@ -146,7 +163,9 @@ type error: `&[u8]` doesn't implement `Iterator`, which method `next` is of
 ```
 
 It needs `s.as_bytes().iter()`. tests/docs.rs only parses and formats a
-docs block with no `fn main`, so docs/40's example was never checked. Two
+docs block with no `fn main`, so docs/40's example was never checked.
+**Fixed in t 0.86.0**, the docs half: such blocks are checked, and
+docs/40 says `.iter()`. Two
 things: such blocks could be checked as items, and whether `for x in
 slice` (and `in list`) should work at all is open; every `for` in t-metal
 says `.iter()`.
@@ -179,7 +198,8 @@ Without the invariant, `shift - 4` may panic. `for i in 0..16u32` with
   `Hex { n: cause }` where `Hex(cause)` was what came to mind.
 - **`\x` only in byte literals** (unsure): backspace in a `&str` is
   `"\u{8} \u{8}"`, not `"\x08 \x08"`. `\x00` to `\x7f` are always one
-  UTF-8 byte, which Rust allows in strings for that reason.
+  UTF-8 byte, which Rust allows in strings for that reason. **Fixed in t
+  0.86.0**: `shell/line.t` says `"\x08 \x08"`.
 - **No `&[a, b]` as a slice** (unsure): `steps(&[("a", "b"), ..])` is
   "expected `[(&str, &str)]`, found `[(&'static str, &'static str); 9]`";
   it's `[..].as_slice()`.

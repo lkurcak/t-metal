@@ -42,20 +42,21 @@ port, and QEMU exits with 1.
   allocator the runtime calls (a free list per power-of-two size class),
   and `memcpy` and friends.
 - `main.t` is the kernel's root: the loop that feeds the serial port to the
-  shell, and every `extern fn`: the platform's `t_platform_write` and
-  `t_platform_halt`, `trap` and `poweroff` for start.S, and the imports
-  from start.S and platform.c. The modules are the board's devices:
-  `board` (addresses, and the board as the shell sees it), `uart`,
-  `timer`, `trap`, `power` and `heap`.
+  shell. The modules are the board's devices, each with the `extern fn`s
+  of its own: `board` (addresses, and the board as the shell sees it),
+  `uart` (the platform's `t_platform_write`), `timer` (start.S's
+  `enable_interrupts`), `trap` (`trap` for start.S, its `breakpoint`),
+  `power` (the platform's `t_platform_halt`, `poweroff` for start.S) and
+  `heap` (platform.c's counters).
 - `shell/` is a library: the line editor, the commands and the values
   `set` keeps. It touches no machine, only a `Machine` and a sink it's
   given, so its tests run on the hosted target.
 
 ## Checking it
 
-`tests/run.sh` checks what CI checks: the shell type-checks with no
-warnings, everything is formatted, the shell's tests pass, the kernel
-builds for the freestanding target with no warnings, and what it writes on
+`tests/run.sh` checks what CI checks: the kernel and the shell type-check
+with no warnings, everything is formatted, their tests pass, the kernel
+builds for the freestanding target, and what it writes on
 QEMU for each session in `tests/sessions` is `tests/expected.txt`. It
 needs `t`, clang with the riscv64 target, ld.lld and
 `qemu-system-riscv64` (Debian and Ubuntu: `clang lld qemu-system-riscv`,
