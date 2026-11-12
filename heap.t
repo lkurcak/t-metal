@@ -2,7 +2,13 @@
 
 use shell::Memory;
 
-use crate::{heap_live, heap_peak, heap_size, heap_touched, heap_used};
+/// What platform.c counts of the heap: its size, how much of it was ever
+/// handed out, how much is now and at most, and how many blocks are.
+extern fn heap_size() -> usize with global;
+extern fn heap_touched() -> usize with global;
+extern fn heap_used() -> usize with global;
+extern fn heap_peak() -> usize with global;
+extern fn heap_live() -> usize with global;
 
 /// How the heap is doing now.
 pub fn memory() -> Memory with global {

@@ -1,9 +1,9 @@
 #!/bin/sh
-# Checks t-metal: the shell type-checks with no warnings (so nothing in it
-# can panic: it asks for `implicit_panics`), everything is formatted, the
-# shell's tests pass, the kernel builds for the freestanding target with no
-# warnings, and what it writes on QEMU for each session in tests/sessions
-# is tests/expected.txt. Run from anywhere.
+# Checks t-metal: the kernel and the shell type-check with no warnings (so
+# nothing in them can panic: they ask for `implicit_panics`), everything is
+# formatted, their tests pass, the kernel builds for the freestanding
+# target, and what it writes on QEMU for each session in tests/sessions is
+# tests/expected.txt. Run from anywhere.
 #
 # Needs `t` on PATH, and clang (with the riscv64 target), ld.lld and
 # qemu-system-riscv64, or what $CC, $LD and $QEMU name.
@@ -21,23 +21,15 @@ export CC
 FLAGS="--target=riscv64-unknown-elf -march=rv64imac_zicsr -mabi=lp64 -mcmodel=medany"
 
 t check --deny-warnings shell/lib.t
+t check --deny-warnings main.t
 t fmt --check ./*.t shell/*.t
 t test --deny-warnings shell/lib.t
+# Each test of the kernel's is a hosted program of its own, whose platform
+# is the C library's: its exports are T functions there.
+t test --deny-warnings main.t
 
-# The kernel can't be type-checked by `t check`, which checks for the
-# hosted target, where the platform's functions are the C library's
-# (FRICTION.md); `t build` checks it for the freestanding one, but has no
-# --deny-warnings, so any warning it writes fails here.
 mkdir -p build
-T_LANG_CFLAGS="$FLAGS" t build --target freestanding -o build/kernel.o main.t 2> build/warnings.txt || {
-    cat build/warnings.txt
-    exit 1
-}
-if [ -s build/warnings.txt ]; then
-    cat build/warnings.txt
-    echo "FAIL: building the kernel warned"
-    exit 1
-fi
+T_LANG_CFLAGS="$FLAGS" t build --target freestanding -o build/kernel.o main.t
 # shellcheck disable=SC2086 # each word of $FLAGS is a flag
 $CC $FLAGS -ffreestanding -O2 -Wall -Wextra -Werror -c boot/platform.c -o build/platform.o
 # shellcheck disable=SC2086

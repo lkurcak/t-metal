@@ -26,3 +26,10 @@ pub fn off() -> ! {
 pub fn fail(status: { s: u32 | s > 0 && s < 0x1_0000 }) -> ! {
     loop { device().write((status << 16) | FAIL) }
 }
+
+/// Stops the machine after a panic: QEMU exits with 1. The platform's.
+extern fn t_platform_halt() -> ! { fail(1) }
+
+/// Turns the machine off once `main` gives back: QEMU exits with 0.
+/// start.S calls it.
+extern fn poweroff() -> ! { off() }

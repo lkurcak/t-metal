@@ -42,6 +42,10 @@ pub fn put_text(b: u8) {
     put(b)
 }
 
+/// Writes a byte of a panic's message, to the serial port: the platform's
+/// (docs/39-freestanding.md and docs/40-extern.md of t-lang).
+extern fn t_platform_write(b: u8) { put_text(b) }
+
 /// The serial port, as somewhere to write text. Writing to it can't fail.
 #[derive(Discard)]
 pub struct Uart {}

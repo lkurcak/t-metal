@@ -75,11 +75,11 @@ impl Editor {
         }
         if b == BACKSPACE || b == DELETE {
             if self.line.pop().is_some() {
-                out.write_str("\u{8} \u{8}")?;
+                out.write_str("\x08 \x08")?;
             }
         } else if b == KILL {
             while self.line.pop().is_some() {
-                out.write_str("\u{8} \u{8}")?;
+                out.write_str("\x08 \x08")?;
             }
         } else if b == CANCEL {
             self.line.clear();
