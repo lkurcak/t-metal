@@ -100,8 +100,8 @@ arrows left out
 t-metal: T on bare metal. Type `help` for the commands.
 > trap
 runtime error: panicked: trap: cause 0x0000000000000003 at 0xADDRESS
-  --> trap.t:29:9
+  --> trap.t:27:9
    |
-29 |         core::panic::panic_with(&f"trap: cause {Hex { n: cause }} at {Hex { n: at }}");
-   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+27 |         core::panic::panic_with(&f"trap: cause 0x{cause:016x} at 0x{at:016x}");
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 [exit 1]

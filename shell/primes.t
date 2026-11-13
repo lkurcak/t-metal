@@ -18,7 +18,7 @@ with {alloc, W::e}
     let found = sieve(n);
     if found.len() <= LISTED {
         let mut first = true;
-        for p in found.iter() {
+        for p in &found {
             if !first {
                 out.write_char(' ')?;
             }

@@ -55,7 +55,7 @@ impl Write for Uart {
     effect e = {};
 
     fn write_str(&mut self, s: &str) -> Result<(), !> {
-        for b in s.as_bytes().iter() {
+        for b in s.as_bytes() {
             put_text(*b);
         }
         Ok(())

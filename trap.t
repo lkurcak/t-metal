@@ -1,8 +1,6 @@
 //! Traps: where the machine goes when an interrupt comes, or when an
 //! instruction can't be run. start.S's `trap_vector` calls `trap`.
 
-use core::fmt::{Display, Write};
-
 use crate::timer;
 
 /// `mcause` of the machine timer's interrupt: the interrupt bit, and 7.
@@ -26,29 +24,12 @@ fn take(cause: u64, at: u64) with {global, panic} {
     if cause == TIMER {
         timer::interrupt();
     } else {
-        core::panic::panic_with(&f"trap: cause {Hex { n: cause }} at {Hex { n: at }}");
-    }
-}
-
-/// A number, written in hexadecimal.
-#[derive(Copy, Discard)]
-struct Hex { n: u64 }
-
-impl Display for Hex {
-    fn fmt<W: Write>(&self, w: &mut W) -> Result<(), W::Error> with W::e {
-        w.write_str("0x")?;
-        // Sixteen digits, the most significant first.
-        for i in 0..16u32 {
-            let digit = (self.n >> (60 - 4 * i)) & 0xf;
-            let c = if digit < 10 { b'0' + digit as u8 } else { b'a' + (digit - 10) as u8 };
-            w.write_char(c as char)?;
-        }
-        Ok(())
+        core::panic::panic_with(&f"trap: cause 0x{cause:016x} at 0x{at:016x}");
     }
 }
 
 #[test]
-fn hex_is_sixteen_digits() with {alloc, panic} {
-    let s = alloc::string::String::of(&Hex { n: 0x8000_0000_0000_0007 });
+fn a_cause_is_sixteen_digits() with {alloc, panic} {
+    let s = alloc::string::String::of(&f"0x{TIMER:016x}");
     assert_eq(&s.as_str(), &"0x8000000000000007");
 }

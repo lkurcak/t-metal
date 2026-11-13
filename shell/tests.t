@@ -38,7 +38,7 @@ fn session(typed: &str) -> (String, Outcome) {
     shell.start(&mut out).into_ok();
     out.clear();
     let mut last = Outcome::Read;
-    for b in typed.as_bytes().iter() {
+    for b in typed.as_bytes() {
         last = shell.feed(*b, &machine, &mut out).into_ok();
     }
     (out, last)
@@ -59,7 +59,7 @@ fn writes(typed: &str, written: &str) {
 fn steps(steps: &[(&str, &str)]) {
     let mut typed = String::new();
     let mut written = String::new();
-    for step in steps.iter() {
+    for step in steps {
         typed.push_str(step.0);
         written.push_str(step.1);
     }
@@ -110,17 +110,19 @@ fn says_what_is_wrong() {
 
 #[test]
 fn keeps_values() {
-    steps([
-        ("set b two words\n", "set b two words\nb = two words\n> "),
-        ("set a 1\n", "set a 1\na = 1\n> "),
-        ("get b\n", "get b\ntwo words\n> "),
-        ("set a one\n", "set a one\na = one (was 1)\n> "),
-        ("keys\n", "keys\na\nb\n> "),
-        ("del a\n", "del a\nforgot a = one\n> "),
-        ("get a\n", "get a\nno value for a\n> "),
-        ("del a\n", "del a\nno value for a\n> "),
-        ("keys\n", "keys\nb\n> "),
-    ].as_slice());
+    steps(
+        &[
+            ("set b two words\n", "set b two words\nb = two words\n> "),
+            ("set a 1\n", "set a 1\na = 1\n> "),
+            ("get b\n", "get b\ntwo words\n> "),
+            ("set a one\n", "set a one\na = one (was 1)\n> "),
+            ("keys\n", "keys\na\nb\n> "),
+            ("del a\n", "del a\nforgot a = one\n> "),
+            ("get a\n", "get a\nno value for a\n> "),
+            ("del a\n", "del a\nno value for a\n> "),
+            ("keys\n", "keys\nb\n> "),
+        ],
+    );
     writes("keys\n", "keys\nno keys\n> ");
 }
 

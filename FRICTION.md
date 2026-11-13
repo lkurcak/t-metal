@@ -169,7 +169,10 @@ docs block with no `fn main`, so docs/40's example was never checked.
 docs/40 says `.iter()`. Two
 things: such blocks could be checked as items, and whether `for x in
 slice` (and `in list`) should work at all is open; every `for` in t-metal
-says `.iter()`.
+says `.iter()`. **Fixed in t 0.88.0**: `for x in s` goes through a slice,
+and `for x in &l` a list (`IntoIterator`, t-lang
+docs/73-for-over-collections.md); `uart.t`, `shell/tests.t` and
+`shell/primes.t` say so.
 
 ## `%` in a loop invariant — gap
 
@@ -200,7 +203,8 @@ its `for`.
 
 - **No hexadecimal in `core::fmt`** (gap): a trap's cause and address are
   wanted in hex. `trap.t` has its own `Hex`. A `{x:x}` hole, or a `Hex`
-  wrapper in `core::fmt`, would do.
+  wrapper in `core::fmt`, would do. **Fixed in t 0.88.0**: `trap.t` says
+  `f"0x{cause:016x}"`, and its `Hex` is gone.
 - **No tuple structs** (by design, docs/58): `struct Hex { n: u64 }` and
   `Hex { n: cause }` where `Hex(cause)` was what came to mind.
 - **`\x` only in byte literals** (unsure): backspace in a `&str` is
@@ -209,10 +213,12 @@ its `for`.
   0.86.0**: `shell/line.t` says `"\x08 \x08"`.
 - **No `&[a, b]` as a slice** (unsure): `steps(&[("a", "b"), ..])` is
   "expected `[(&str, &str)]`, found `[(&'static str, &'static str); 9]`";
-  it's `[..].as_slice()`.
+  it's `[..].as_slice()`. **Fixed in t 0.88.0**: a `&[T; N]` is a `&[T]`
+  where one is wanted; `steps(&[..])`.
 - **No `\` line continuation in string literals** (unsure): a test's
   expected output of nine commands was one long string, now a list of
-  pairs.
+  pairs. **Fixed in t 0.88.0**: a `\` that ends a line continues the
+  string, as in Rust; the pairs read better and stay.
 - **`wrapping_add(a, b)`, not `a.wrapping_add(b)`** (by design?): `u64`
   has no method `wrapping_add`; the free function is `core::num`'s. The
   checker was right to ask: `mtime + PERIOD` may overflow, in principle.
