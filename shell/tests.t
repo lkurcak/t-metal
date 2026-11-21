@@ -35,11 +35,11 @@ fn session(typed: &str) -> (String, Outcome) {
     let mut shell = Shell::new();
     let mut out = String::new();
     let machine = Fake { now: Cell::new(0) };
-    shell.start(&mut out).into_ok();
+    shell.start(&mut out).unwrap();
     out.clear();
     let mut last = Outcome::Read;
     for b in typed.as_bytes() {
-        last = shell.feed(*b, &machine, &mut out).into_ok();
+        last = shell.feed(*b, &machine, &mut out).unwrap();
     }
     (out, last)
 }
@@ -69,7 +69,7 @@ fn steps(steps: &[(&str, &str)]) {
 #[test]
 fn says_hello() {
     let mut out = String::new();
-    Shell::new().start(&mut out).into_ok();
+    Shell::new().start(&mut out).unwrap();
     assert_eq(out.as_str(), HELLO);
 }
 
