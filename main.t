@@ -28,9 +28,9 @@ fn main() {
     timer::start();
     let mut uart = Uart {};
     let mut shell = Shell::new();
-    shell.start(&mut uart).into_ok();
+    shell.start(&mut uart).unwrap();
     loop {
-        match shell.feed(uart::get(), &Board {}, &mut uart).into_ok() {
+        match shell.feed(uart::get(), &Board {}, &mut uart).unwrap() {
             Outcome::Read => {},
             Outcome::Halt => return,
             Outcome::Panic => core::panic::panic("asked to"),
